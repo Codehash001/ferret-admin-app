@@ -1,0 +1,51 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  iframe {
+    border: none;
+  }
+  
+  #popupButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+  }
+  
+  #popupButton svg {
+    margin-right: 5px;
+  }
+  
+  #popupWindow {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 81%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 640px;
+    border-radius: 0.5rem;
+    background-color: white;
+    z-index: 8888;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  #closeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    color: #aaa;
+    cursor: pointer;
+  }
+  
