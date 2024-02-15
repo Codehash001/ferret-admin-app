@@ -148,7 +148,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ chatbotname }) => {
 
   return (
     <div className="p-4 border-spacing-1 border">
-      <h1 className='font-medium mb-2'>Select Author and Upload a new document to {chatbotname}'s Dataset.</h1>
+      <h1 className='font-medium mb-2'>Select Author and Upload a new document to {chatbotname}&lsquo;s Dataset.</h1>
           <div className='flex space-x-3'>
           <Dropdown label={selectedAuthor ? selectedAuthor :"Select an author"} className='bg-none'>
           {allAuthors.map((item , index) =>
