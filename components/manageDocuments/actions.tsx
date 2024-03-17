@@ -87,7 +87,7 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
     }
   };
 
-  const deleteFromSupaVector = async () => {
+  const deleteVector = async () => {
     const { data, error } = await supabase
       .from('documents')
       .delete({ count: 'exact' })
@@ -142,7 +142,7 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
       .update({ status: 'deleting' })
       .eq('name', filedata.name);
 
-    await deleteFromSupaVector();
+    await deleteVector();
 
     const { data, error } = await supabase
       .from('files_info')
@@ -163,7 +163,7 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
     if (error) {
       console.log('error deletion status', error.message);
     }
-    await deleteFromSupaVector();
+    await deleteVector();
     await deeleteFromBucketStotage();
     await deleteFromInfoTable();
   };

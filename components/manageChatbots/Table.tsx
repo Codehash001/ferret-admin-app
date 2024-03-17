@@ -13,6 +13,9 @@ interface TableProps {
     password: string;
     description: string;
     created_at: string;
+    header:string;
+    primary_color:string;
+    logo_name:string
     // Add more fields as needed
   }>;
 }
@@ -31,6 +34,9 @@ const Table: React.FC<TableProps> = ({ data  }) => {
             <th className="p-2 text-start">Password</th>
             <th className="p-2 text-start">Description</th>
             <th className="p-2 text-start">Created at</th>
+            <th className="p-2 text-start">Header</th>
+            <th className="p-2 text-start">Primary color</th>
+            <th className="p-2 text-start">Logo name</th>
             <th className="p-2 text-start">Actions</th>
           </tr>
         </thead>
@@ -42,11 +48,14 @@ const Table: React.FC<TableProps> = ({ data  }) => {
                 index % 2 === 0 ? 'bg-slate-200 w-full' : 'bg-white w-full'
               }
             >
-              <td className="p-2 w-[30%]">{item.id}</td>
+              <td className="p-2 w-[20%]">{item.id}</td>
               <td className="p-2 w-[10%]">{item.name}</td>
-              <td className="p-2 w-[15%]">{item.password}</td>
-              <td className="p-2 w-[15%]">{item.description}</td>
-              <td className="p-2 w-[15%]">{item.created_at}</td>
+              <td className="p-2 w-[10%]">{item.password}</td>
+              <td className="p-2 w-[20%]">{item.description}</td>
+              <td className="p-2 w-[20%]">{item.created_at}</td>
+              <td className="p-2 w-[10%]">{item.header}</td>
+              <td className="p-2 w-[20%]">{item.primary_color}</td>
+              <td className="p-2 w-[10%]">{item.logo_name}</td>
               <td className="p-2 w-[10%]">
                 {/* Add your action buttons or links here */}
                 <Actions botdata={item}/>

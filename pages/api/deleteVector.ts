@@ -1,29 +1,10 @@
-import { SupabaseVectorStore } from "langchain/vectorstores";
-import { OpenAIEmbeddings } from "langchain/embeddings";
-import { createClient } from "@supabase/supabase-js";
+// import { PineconeClient } from "@pinecone-database/pinecone";
 
-// First, follow set-up instructions at
-// https://js.langchain.com/docs/modules/indexes/vector_stores/integrations/supabase
+// const pc = new PineconeClient()
+// const index = pc.index("pinecone-index")
 
-const privateKey = process.env.SUPABASE_KEY;
-if (!privateKey) throw new Error(`Expected env var SUPABASE_PRIVATE_KEY`);
-
-const url = process.env.SUPABASE_URL;
-if (!url) throw new Error(`Expected env var SUPABASE_URL`);
-
-export const run = async () => {
-  const client = createClient(url, privateKey);
-
-  const embeddings = new OpenAIEmbeddings();
-
-  const store = new SupabaseVectorStore(embeddings, {
-    client,
-    tableName: "documents",
-  });
-
-  await SupabaseVectorStore
-
-  /*
-    []
-  */
-};
+// const ns = index.namespace('example-namespace')
+// // Delete one record by ID.
+// await ns.deleteOne('id-1');
+// // Delete more than one record by ID.
+// await ns.deleteMany(['id-2', 'id-3']);
