@@ -44,7 +44,6 @@ const Actions: React.FC<actionprops> = ({ botdata }) => {
         setPassword(chatbotData[0].password);
         setHeader(chatbotData[0].header);
         setPrimaryColor(chatbotData[0].primary_color);
-        setLogoFile(chatbotData[0].logo_name);
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -92,7 +91,7 @@ const Actions: React.FC<actionprops> = ({ botdata }) => {
     try {
       const logoFileName = logoFile ? `${logoFile.name}` : '';
 
-      if (logoFile) {
+      if (logoFile !== null) {
         const { data: fileData, error: fileError } = await supabase.storage
           .from('logos') // Replace with your Supabase bucket name
           .upload(logoFileName, logoFile);
@@ -101,20 +100,39 @@ const Actions: React.FC<actionprops> = ({ botdata }) => {
           console.error('Error uploading avatar:', fileError);
           return;
         }
-      }
-      const { data, error } = await supabase.from('chatbots').update({
-        description:description,
-        password:password,
-        primary_color : primaryColor,
-        header:header,
-        logo_name:logoFileName,
-      })
-      .eq('id', botdata.id);
 
-      if (error) {
-        console.error('Error inserting data:', error);
-      } else {
-        console.log('Data inserted successfully:', data);
+        const { data, error } = await supabase.from('chatbots').update({
+          description:description,
+          password:password,
+          primary_color : primaryColor,
+          header:header,
+          logo_name:logoFileName,
+        })
+        .eq('id', botdata.id);
+  
+        if (error) {
+          console.error('Error inserting data:', error);
+        } else {
+          console.log('Data inserted successfully:', data);
+        }
+      }
+      else{
+
+        
+        const { data, error } = await supabase.from('chatbots').update({
+          description:description,
+          password:password,
+          primary_color : primaryColor,
+          header:header,
+        })
+        .eq('id', botdata.id);
+  
+        if (error) {
+          console.error('Error inserting data:', error);
+        } else {
+          console.log('Data inserted successfully:', data);
+        }
+
       }
     } catch (error : any) {
       console.error('Error:', error.message);
