@@ -1,6 +1,8 @@
+import { pinecone } from '@/utils/pinecone-client';
 import { supabase } from '@/utils/supabase-client';
 import { Button, Dropdown } from 'flowbite-react';
 import { useState } from 'react';
+
 
 interface actionprops {
 
@@ -88,16 +90,31 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
   };
 
   const deleteVector = async () => {
-    const { data, error } = await supabase
-      .from('documents')
-      .delete({ count: 'exact' })
-      .match({ 'metadata ->> pdf_name': filedata.name });
+    // const { data, error } = await supabase
+    //   .from('documents')
+    //   .delete({ count: 'exact' })
+    //   .match({ 'metadata ->> pdf_name': filedata.name });
 
-    if (error) {
-      console.error('Error deleteing vector data:', error.message);
-    } else {
-      console.log('Data deleted from vector:', data);
+    // if (error) {
+    //   console.error('Error deleteing vector data:', error.message);
+    // } else {
+    //   console.log('Data deleted from vector:', data);
+    // }
+
+    try {
+
+      const index = pinecone.Index(process.env.PINECONE_INDEX ? process.env.PINECONE_INDEX :'');
+      await index.deleteMany({
+        pdf_name: { $eq: filedata.name },
+      });
+      console.log('deleted vectors from pinecone index');
+      
+    } catch (error) {
+      console.error('error deleting vectors from pinecone',error)
+      
     }
+    
+
   };
 
   const deleteFromInfoTable = async () => {

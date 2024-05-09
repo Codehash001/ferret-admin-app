@@ -34,7 +34,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
       console.log('creating vector store...');
       /*create and store the embeddings in the vectorStore*/
-      const embeddings = new OpenAIEmbeddings();
+      const embeddings = new OpenAIEmbeddings(
+      );
       const index = pinecone.Index(process.env.PINECONE_INDEX ? process.env.PINECONE_INDEX :''); //change to your own index name
   
       //embed the PDF documents
