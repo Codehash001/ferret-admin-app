@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { PineconeStore } from 'langchain/vectorstores';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { PineconeStore } from "@langchain/pinecone";
 import { pinecone } from '@/utils/pinecone-client';
-import { PDFLoader } from 'langchain/document_loaders';
 import { CustomPDFLoader } from "@/utils/customPDFLoader";
 
-import { DirectoryLoader } from 'langchain/document_loaders';
+import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
 
 const filePath = 'public/docs';
 
@@ -36,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       /*create and store the embeddings in the vectorStore*/
       const embeddings = new OpenAIEmbeddings(
       );
-      const index = pinecone.Index(process.env.PINECONE_INDEX ? process.env.PINECONE_INDEX :''); //change to your own index name
+      const index = pinecone.Index(process.env.PINECONE_INDEX ? process.env.PINECONE_INDEX :''); 
   
       //embed the PDF documents
       const response = await PineconeStore.fromDocuments(docs, embeddings, {

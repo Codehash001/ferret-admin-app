@@ -1,6 +1,6 @@
 import { Document } from 'langchain/document';
 import { readFile } from 'fs/promises';
-import { BaseDocumentLoader } from 'langchain/document_loaders';
+import { BaseDocumentLoader } from 'langchain/document_loaders/base';
 import csv from 'csv-parser';
 import { marked } from 'marked';
 import path from 'path';

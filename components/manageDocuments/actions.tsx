@@ -1,3 +1,5 @@
+'use client'
+
 import { pinecone } from '@/utils/pinecone-client';
 import { supabase } from '@/utils/supabase-client';
 import { Button, Dropdown } from 'flowbite-react';
@@ -13,178 +15,127 @@ interface actionprops {
     batches: number;
     text_size: number;
     status: string;
-    // Add more fields as needed
   };
 }
 
 const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
-  async function runCommand() {
-    console.log('Ingesting your data. Please wait...');
-    console.log(chatbotnamespace)
-    const response = await fetch('/api/runCommand', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(chatbotnamespace),
-    });
-    if (response.ok) {
-      const output = await response.text();
-      console.log(output);
-      console.log('Succesfully ingested your data!');
-      const { data, error } = await supabase
-        .from('files_info')
-        .update({ status: 'ingested' })
-        .eq('name', filedata.name);
-      console.log('Succesfully updated table', data);
-      if (error) {
-        await supabase
-          .from('files_info')
-          .update({ status: 'error' })
-          .eq('name', filedata.name);
-        console.log('error updating table table', error.message);
-      }
-    } else {
-      const error = await response.text();
-      console.error(error);
-      console.log('Error ingesting your data -_-' , error);
-    }
-  }
 
-  const handleDownloadFromSupa = async () => {
-    try {
+  const ingest = async () => {
+    const { data, error } = await supabase
+      .from('files_info')
+      .update({ status: 'ingesting' })
+      .eq('name', filedata.name);
+    if (!error) {
       const FileName = filedata.name
-      const response = await fetch('/api/downloadFile', {
+      const res = await fetch('/api/downloadFile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ FileName }),
       });
-      if (response.ok) {
-        const { message } = await response.json();
+      if (res.ok) {
+        const { message } = await res.json();
         console.log(message);
+        const response = await fetch('/api/runCommand', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(chatbotnamespace),
+        });
+        if (response.ok) {
+          const output = await response.text();
+          console.log(output);
+          console.log('Succesfully ingested your data!');
+          const { data, error } = await supabase
+            .from('files_info')
+            .update({ status: 'ingested' })
+            .eq('name', filedata.name);
+          console.log('Succesfully updated table', data);
+          if (error) {
+            await supabase
+              .from('files_info')
+              .update({ status: 'error' })
+              .eq('name', filedata.name);
+            console.log('error updating table table', error.message);
+          }
+        }
       } else {
-        console.error('Failed to download file:', response.statusText);
+        console.error('Failed to download file:', res.statusText);
       }
-    } catch (error) {
-      console.error('Error downloading file:', error);
     }
   };
 
-  const ClearLocalDir = async () => {
+  const handleDeleteLocalDir = async () => {
     try {
-      const response = await fetch('/api/deleteTempFiles', {
-        method: 'DELETE',
+      await fetch('/api/deleteTempFiles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data.message);
-      } else {
-        console.error('Failed to delete files');
-      }
+      console.log('temp files deleted!')
     } catch (error) {
-      console.error('Error deleting files:', error);
+      console.log(error)
     }
-  };
+  }
 
-  const deleteVector = async () => {
-    // const { data, error } = await supabase
-    //   .from('documents')
-    //   .delete({ count: 'exact' })
-    //   .match({ 'metadata ->> pdf_name': filedata.name });
-
-    // if (error) {
-    //   console.error('Error deleteing vector data:', error.message);
-    // } else {
-    //   console.log('Data deleted from vector:', data);
-    // }
-
-    try {
-
-      const index = pinecone.Index(process.env.PINECONE_INDEX ? process.env.PINECONE_INDEX :'');
-      await index.deleteMany({
-        pdf_name: { $eq: filedata.name },
-      });
-      console.log('deleted vectors from pinecone index');
-      
-    } catch (error) {
-      console.error('error deleting vectors from pinecone',error)
-      
-    }
-    
-
-  };
-
-  const deleteFromInfoTable = async () => {
-    const { data, error } = await supabase
-      .from('files_info')
-      .delete()
-      .match({ name: filedata.name });
-
-    if (error) {
-      console.error('Error deleteing info table data:', error.message);
-    } else {
-      console.log('Data deleted from info table:', data);
-    }
-  };
-
-  const deeleteFromBucketStotage = async () => {
-    const { data, error } = await supabase.storage
-      .from('files')
-      .remove([filedata.name]);
-    if (error) {
-      console.error('Error deleting bucket data', error.message);
-    } else {
-      console.log('Permenently deleted data from storage bucket:', data);
-    }
-  };
-
-  const handleClickIngest = async () => {
-    const { data, error } = await supabase
-      .from('files_info')
-      .update({ status: 'ingesting' })
-      .eq('name', filedata.name);
-    if (!error) {
-      await handleDownloadFromSupa();
-      await runCommand();
-      await ClearLocalDir();
-    }
-  };
-
-  const handleClickDelete = async () => {
-    await supabase
-      .from('files_info')
-      .update({ status: 'deleting' })
-      .eq('name', filedata.name);
-
-    await deleteVector();
-
-    const { data, error } = await supabase
-      .from('files_info')
-      .update({ status: 'uploaded' })
-      .eq('name', filedata.name);
-    console.log('data is only uploaded not ingested yet', data);
-    if (error) {
-      console.log('error handleling delete function', error.message);
-    }
-  };
-
-  const handleClickDeletePeremenent = async () => {
+  const deleteFromSupabase = async () => {
     const { data, error } = await supabase
       .from('files_info')
       .update({ status: 'deleting' })
       .eq('name', filedata.name);
-    console.log('deleting data', data);
     if (error) {
       console.log('error deletion status', error.message);
     }
-    await deleteVector();
-    await deeleteFromBucketStotage();
-    await deleteFromInfoTable();
+
   };
 
+  const deletefromPinecone = async () => {
+    try {
+      const FileName = filedata.name
+      const response = await fetch('/api/deleteVector', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(FileName),
+      });
+      console.log(response);
+      if (response.ok) {
+        const { data, error } = await supabase
+      .from('files_info')
+      .delete()
+      .eq('name', filedata.name);
+      console.log('permanantly deleted')
+    if (error) {
+      console.log('error deletion status', error.message);
+    }
+      }
+      
+    } catch (error) {
+      console.log('error deletion vector', error);
+    }
+  }
+
+  const handleDeletePermemnat = async () => {
+    try {
+      await deletefromPinecone();
+      await deleteFromSupabase();
+    } catch (error) {
+      
+    }
+  }
+
+  const handleClickIngest = async () => {
+    try {
+      await ingest();
+      await handleDeleteLocalDir();
+    } catch (error) {
+      
+    }
+  }
   return (
     <>
       <Dropdown
@@ -203,12 +154,12 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
           </div>
         )}
       >
-        <Dropdown.Item onClick={handleClickIngest}>
-          <Button outline fullSized>
+        <Dropdown.Item>
+          <Button outline fullSized onClick={handleClickIngest}>
             Ingest to dataset
           </Button>
         </Dropdown.Item>
-        <Dropdown.Item onClick={handleClickDeletePeremenent}>
+        <Dropdown.Item onClick={handleDeletePermemnat}>
           <Button gradientMonochrome="failure">Delete permenently</Button>
         </Dropdown.Item>
       </Dropdown>

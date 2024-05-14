@@ -12,24 +12,26 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs';
 import path from 'path';
+import { pinecone } from '@/utils/pinecone-client';
 
 const deleteFilesHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-//   try {
-//     const folderPath = path.join(process.cwd(), 'public', 'docs');
+  try {
 
-//     // Delete all files in the folder
-//     fs.readdirSync(folderPath).forEach((file) => {
-//       fs.unlinkSync(path.join(folderPath, file));
-//     });
-
-//     res.status(200).json({ message: 'All files deleted successfully' });
-//   } catch (error) {
-//     console.error('Error deleting files:', error);
-//     res.status(500).json({ message: 'Failed to delete files' });
-//   }
+    const FileName = req.body
+    console.log(`deleting file ${FileName} from pinecone`)
+    
+    const index = pinecone.Index(process.env.PINECONE_INDEX ? process.env.PINECONE_INDEX :'');
+    await index._deleteMany({
+      pdfName: FileName 
+    });
+    res.status(200).json({ message: 'All files deleted successfully'});
+  } catch (error) {
+    console.error('Error deleting vector:', error);
+    res.status(500).json({ message: 'Failed to delete vector' });
+  }
 };
 
 export default deleteFilesHandler;

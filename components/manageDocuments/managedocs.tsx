@@ -1,3 +1,5 @@
+'use client'
+
 import { GetServerSideProps, NextPage } from 'next';
 import { useState, useEffect, SetStateAction , useRef } from 'react';
 import { supabase } from '../../utils/supabase-client';
@@ -118,7 +120,7 @@ const ManageDocs: NextPage = () => {
                 ))}
               </Dropdown>
             </div>
-            <div className="rounded-sm h-[380px] overflow-y-auto">
+            <div className="rounded-sm h-[300px] overflow-y-auto">
             <Table data={bucketData} chatbotname={selectedChatbot} />
             </div>
           </div>
