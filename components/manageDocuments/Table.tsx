@@ -6,6 +6,7 @@ import { FcOk, FcHighPriority } from 'react-icons/fc';
 import { BsDatabaseFillCheck } from 'react-icons/bs';
 import { CgSpinnerTwo } from 'react-icons/cg';
 import { supabase } from '@/utils/supabase-client';
+import { FaUnlink } from "react-icons/fa";
 
 
 interface TableProps {
@@ -128,7 +129,16 @@ const Table: React.FC<TableProps> = ({ data , chatbotname }) => {
                     <FcHighPriority className="ml-2 h-5 w-5" />
                   </Button>
                   </Tooltip>
-                ) : (
+                ) :item.status == 'unlinked' ?
+                (
+                  <Tooltip content='Unlinked document from queries'>
+                  <Button size="sm" color="black">
+                    {item.status}
+                    <FaUnlink className="ml-2 h-5 w-5" />
+                  </Button>
+                  </Tooltip>
+                ):
+                 (
                   <></>
                 )}
               </td>

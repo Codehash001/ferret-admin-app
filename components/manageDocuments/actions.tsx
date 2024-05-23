@@ -84,13 +84,17 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
   const deleteFromSupabase = async () => {
     const { data, error } = await supabase
       .from('files_info')
-      .update({ status: 'deleting' })
+      .update({ status: 'unlinked' })
       .eq('name', filedata.name);
     if (error) {
       console.log('error deletion status', error.message);
     }
+    if (!error) {
+
+    }
 
   };
+
 
   const deletefromPinecone = async () => {
     try {
@@ -121,7 +125,7 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
 
   const handleDeletePermemnat = async () => {
     try {
-      await deletefromPinecone();
+      // await deletefromPinecone();
       await deleteFromSupabase();
     } catch (error) {
       
@@ -159,8 +163,11 @@ const Actions: React.FC<actionprops> = ({ filedata , chatbotnamespace }) => {
             Ingest to dataset
           </Button>
         </Dropdown.Item>
-        <Dropdown.Item onClick={handleDeletePermemnat}>
-          <Button gradientMonochrome="failure">Delete permenently</Button>
+        <Dropdown.Item > 
+          <Button gradientMonochrome="failure" disabled>Delete permenently</Button>
+        </Dropdown.Item>
+        <Dropdown.Item onClick={deleteFromSupabase}>
+          <Button color='dark' fullSized>Unlink document</Button>
         </Dropdown.Item>
       </Dropdown>
     </>
